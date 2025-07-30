@@ -9,7 +9,7 @@ export function mockTaskRoutes(
 ) {
   const tasks = options?.tasks ?? mockTasks;
 
-  return page.route("**/tasks", (route, request) => {
+  return page.route("**/tasks**", (route, request) => {
     const method = request.method();
 
     if (method === "GET") {
