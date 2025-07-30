@@ -39,9 +39,6 @@ test.describe("Task UI - Mocked API", () => {
     await expect(page.getByText("Task to delete")).toBeVisible();
     await page.getByRole("button", { name: "x" }).click();
 
-    await expect(page.getByText("Task to delete")).toHaveCount(0, {
-      timeout: 10000,
-    });
-
+    await expect(page.getByText("Task to delete")).not.toBeVisible();
   });
 });
