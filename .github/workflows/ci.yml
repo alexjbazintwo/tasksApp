@@ -11,6 +11,16 @@ jobs:
     name: Run API Tests
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:14
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tasks
+          
     defaults:
       run:
         working-directory: backend
@@ -72,40 +82,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      - name: Install backend app dependencies
-        working-directory: backend
-        run: npm install
-
-      - name: Setup backend test database
-        working-directory: backend
-        run: |
-          cp .env.test .env
-          npx prisma db push
-
-      - name: Start backend server
-        working-directory: backend
-        run: npm run dev &
-
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm install
-
       - name: Install Playwright dependencies (Using Chromium only)
         working-directory: frontend/playwright
-        run: npm run setup
+        run: npm install && npm run setup
 
-      - name: Start frontend app
-        working-directory: frontend
-        run: npm run dev &
+      - name: Start Docker containers
+        run: docker compose up -d --build
 
-      - name: Wait for frontend app to be ready
+      - name: Wait for frontend to be ready
         run: npx wait-on http://localhost:5173
 
       - name: Run E2E Playwright tests
         working-directory: frontend/playwright
         run: npx playwright test --grep @e2e
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: docker compose logs
