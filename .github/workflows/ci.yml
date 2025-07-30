@@ -46,22 +46,38 @@ jobs:
         with:
           node-version: 20
 
+      # --- Backend setup ---
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Setup backend test database
+        working-directory: backend
+        run: |
+          cp .env.test .env
+          npx prisma db push
+
+      - name: Start backend server
+        working-directory: backend
+        run: npm run dev &
+      
+      # --- Frontend setup ---
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm install
 
       - name: Install Playwright dependencies
         working-directory: frontend/playwright
-        run: |
+        run:
           npm install
-          npx playwright install chromium
+          npx playwright install --with-deps
 
       - name: Start frontend app
         working-directory: frontend
         run: npm run dev &
-      
-      - name: Wait for frontend app
-        run: npx wait-on http://localhost:5173 --timeout 60000
+
+      - name: Wait for frontend to be ready
+        run: npx wait-on http://localhost:5173
 
       - name: Run Playwright tests
         working-directory: frontend/playwright
