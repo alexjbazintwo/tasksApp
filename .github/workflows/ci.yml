@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: CI
 
 on:
@@ -24,7 +23,7 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install backend dependencies
         run: npm install
 
       - name: Setup test database
@@ -32,16 +31,12 @@ jobs:
           cp .env.test .env
           npx prisma db push
 
-      - name: Run API tests
+      - name: Run backend tests
         run: npm test
 
   frontend-tests:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: frontend/playwright
 
     steps:
       - uses: actions/checkout@v3
@@ -51,11 +46,23 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
+        working-directory: frontend
         run: npm install
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright dependencies
+        working-directory: frontend/playwright
+        run: |
+          npm install
+          npx playwright install --with-deps
+
+      - name: Start frontend app
+        working-directory: frontend
+        run: npm run dev &
+      
+      - name: Wait for frontend to be ready
+        run: npx wait-on http://localhost:5173
 
       - name: Run Playwright tests
+        working-directory: frontend/playwright
         run: npx playwright test
