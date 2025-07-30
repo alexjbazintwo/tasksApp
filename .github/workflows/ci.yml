@@ -60,8 +60,8 @@ jobs:
         working-directory: frontend
         run: npm run dev &
       
-      - name: Wait for frontend to be ready
-        run: npx wait-on http://localhost:5173
+      - name: Wait for frontend app
+        run: npx wait-on http://localhost:5173 --timeout 60000
 
       - name: Run Playwright tests
         working-directory: frontend/playwright

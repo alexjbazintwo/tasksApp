@@ -39,6 +39,9 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
+        baseURL: "http://localhost:5173",
+        actionTimeout: 10000,
+        navigationTimeout: 10000,
       },
     },
   ],
