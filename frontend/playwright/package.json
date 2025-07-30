@@ -1,0 +1,28 @@
+{
+  "name": "sdet",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test:all": "npx playwright test --project=chromium",
+    "test:all:debug": "npx playwright test --project=chromium --debug",
+    "test:chromium": "npx playwright test --project=chromium",
+    "test:mocked:chromium": "npx playwright test --grep @mocked --project=chromium",
+    "test:e2e:chromium": "npx playwright test --grep @e2e --project=chromium",
+    "test:mocked:chromium:debug": "npx playwright test --grep @mocked --project=chromium --debug",
+    "test:e2e:chromium:debug": "npx playwright test --grep @e2e --project=chromium --debug",
+    "test:firefox": "npx playwright test --project=firefox",
+    "test:webkit": "npx playwright test --project=webkit",
+    "test:report": "npx playwright show-report",
+    "lint:fix": "eslint --fix --ext .ts ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.53.2",
+    "@types/node": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "eslint": "^9.30.1"
+  }
+}
