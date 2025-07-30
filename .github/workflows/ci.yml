@@ -35,10 +35,10 @@ jobs:
         run: npm test
 
   frontend-tests:
-      name: Run Playwright Tests
-      runs-on: ubuntu-latest
+    name: Run Playwright Tests
+    runs-on: ubuntu-latest
 
-      steps:
+    steps:
       - uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -66,10 +66,9 @@ jobs:
         working-directory: frontend
         run: npm install
 
-      - name: Install Playwright + browser dependencies
-        working-directory: frontend
-        run: |
-          npx playwright install --with-deps
+      - name: Install dependencies & Playwright (Chromium only)
+        working-directory: frontend/playwright
+        run: npm run setup
 
       - name: Start frontend app
         working-directory: frontend
@@ -81,4 +80,5 @@ jobs:
       - name: Run Playwright tests
         working-directory: frontend/playwright
         run: npx playwright test
+
 
