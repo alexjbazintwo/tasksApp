@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  backend-tests:
+  api-tests:
     name: Run API Tests
     runs-on: ubuntu-latest
 
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install backend dependencies
+      - name: Install backend app dependencies
         run: npm install
 
       - name: Setup test database
@@ -31,11 +31,11 @@ jobs:
           cp .env.test .env
           npx prisma db push
 
-      - name: Run backend tests
+      - name: Run API tests
         run: npm test
 
-  frontend-tests:
-    name: Run Playwright Tests
+  ui-tests:
+    name: Run Mocked UI Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -46,8 +46,38 @@ jobs:
         with:
           node-version: 20
 
-      # --- Backend setup ---
-      - name: Install backend dependencies
+      - name: Install frontend app dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Install Playwright dependencies (Using Chromium only)
+        working-directory: frontend/playwright
+        run: npm run setup
+
+      - name: Start frontend app
+        working-directory: frontend
+        run: npm run dev &
+
+      - name: Wait for frontend to be ready
+        run: npx wait-on http://localhost:5173
+
+      - name: Run mocked Playwright tests
+        working-directory: frontend/playwright
+        run: npx playwright test --grep @mocked
+
+  e2e-tests:
+    name: Run E2E tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install backend app dependencies
         working-directory: backend
         run: npm install
 
@@ -61,12 +91,11 @@ jobs:
         working-directory: backend
         run: npm run dev &
 
-      # --- Frontend setup ---
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm install
 
-      - name: Install dependencies & Playwright (Chromium only)
+      - name: Install Playwright dependencies (Using Chromium only)
         working-directory: frontend/playwright
         run: npm run setup
 
@@ -74,11 +103,9 @@ jobs:
         working-directory: frontend
         run: npm run dev &
 
-      - name: Wait for frontend to be ready
+      - name: Wait for frontend app to be ready
         run: npx wait-on http://localhost:5173
 
-      - name: Run Playwright tests
+      - name: Run E2E Playwright tests
         working-directory: frontend/playwright
-        run: npx playwright test
-
-
+        run: npx playwright test --grep @e2e

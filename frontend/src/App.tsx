@@ -9,28 +9,27 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [input, setInput] = useState("");
 
-useEffect(() => {
-  fetch("http://localhost:5000/api/tasks")
-    .then((res) => res.json())
-    .then(setTasks);
-}, []);
+  useEffect(() => {
+    fetch("/api/tasks")
+      .then((res) => res.json())
+      .then(setTasks);
+  }, []);
 
-const addTask = async () => {
-  const res = await fetch("http://localhost:5000/api/tasks", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: input }),
-  });
-  const newTask: Task = await res.json();
-  setTasks((prev) => [...prev, newTask]);
-  setInput("");
-};
+  const addTask = async () => {
+    const res = await fetch("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: input }),
+    });
+    const newTask: Task = await res.json();
+    setTasks((prev) => [...prev, newTask]);
+    setInput("");
+  };
 
-const deleteTask = async (id: number) => {
-  await fetch(`http://localhost:5000/api/tasks/${id}`, { method: "DELETE" });
-  setTasks((prev) => prev.filter((task) => task.id !== id));
-};
-
+  const deleteTask = async (id: number) => {
+    await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+    setTasks((prev) => prev.filter((task) => task.id !== id));
+  };
 
   return (
     <div>
